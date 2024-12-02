@@ -1,0 +1,85 @@
+<!-- page_social.html -->
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Página Social</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container mt-2 text-end">
+        <!-- Botón de Logout -->
+        <form method="POST" action="{% url 'social:logout' %}">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger">Cerrar sesión</button>
+        </form>
+    </div>
+    <div class="container mt-2">
+        <h1>Bienvenido a la Red Social</h1>
+
+        <!-- Formulario para crear publicaciones -->
+        <div class="row mb-4">
+            <div class="col-12 border" style="padding-block:10px;">
+                <h4>Crear Nueva Publicación</h2>
+                {% if error_message %}
+                    <div class="alert alert-danger">{{ error_message }}</div>
+                {% endif %}
+                <form method="POST" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label for="title" class="form-label">Título</label>
+                        <input type="text" name="title" id="title" class="form-control" placeholder="Título">
+                    </div>
+                    <div class="mb-3">
+                        <label for="description" class="form-label">Descripción</label>
+                        <textarea name="description" id="description" class="form-control" placeholder="Descripción"></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="image" class="form-label">Imagen (opcional)</label>
+                        <input type="file" name="image" id="image" class="form-control">
+                    </div>
+                    <button type="submit" class="btn btn-primary">Publicar</button>
+                </form>
+            </div>
+        </div>
+
+
+        <!-- Mostrar publicaciones -->
+        <div class="row">
+            {% for post in posts %}
+                <div class="col-md-12 mb-4">
+                    <div class="card">
+                        {% if post.image %}
+                            <img src="{{ post.image.url }}" class="card-img-top" alt="{{ post.title }}">
+                        {% endif %}
+                        <div class="card-body">
+                            <h5 class="card-title">{{ post.title }}</h5>
+                            <p class="card-text">{{ post.description }}</p>
+                            <p><small>Autor: {{ post.author.username }} - {{post.created_at | date:"H:i d/m/y"}}</small></p>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+
+        <!-- Paginación -->
+        <nav aria-label="Paginación">
+            <ul class="pagination justify-content-center">
+                <li class="page-item {% if page_id == 0 %}disabled{% endif %}">
+                    <a class="page-link" href="{% if page_id > 0 %}{% url 'social:pageSocial' page_id=page_id|add:-1 %}{% else %}#{% endif %}">Anterior</a>
+                </li>
+                {% for i in page_range %}
+                    <li class="page-item {% if i == page_id %}active{% endif %}">
+                        <a class="page-link" href="{% url 'social:pageSocial' page_id=i %}">{{ i|add:1 }}</a>
+                    </li>
+                {% endfor %}
+                <li class="page-item {% if page_id == max_pages|add:-1 %}disabled{% endif %}">
+                    <a class="page-link" href="{% if page_id < max_pages|add:-1 %}{% url 'social:pageSocial' page_id=page_id|add:1 %}{% else %}#{% endif %}">Siguiente</a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

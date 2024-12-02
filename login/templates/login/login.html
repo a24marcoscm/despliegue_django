@@ -1,0 +1,17 @@
+{% extends 'login/base.html' %}
+
+{% block content %}
+    <h2>Iniciar sesión</h2>
+    <form method="POST">
+        {% csrf_token %}
+        <label for="email">Correo Electrónico:</label>
+        <input class="form-control" type="email" id="email" name="email" required><br><br>
+        <label for="password">Contraseña:</label>
+        <input class="form-control" type="password" id="password" name="password" required><br><br>
+        <button type="submit" class="btn btn-primary">Iniciar Sesión</button>
+    </form>
+    <br/>
+    <a href="{% url 'login:register' %}">
+        <button type="button" class="btn btn-secondary">Crear una cuenta</button>
+    </a>
+{% endblock %}
